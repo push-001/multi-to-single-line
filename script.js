@@ -6,14 +6,24 @@ document.getElementById("copy-text-area")
     }
 });
 
+function pasteFunction(){
+  navigator.clipboard.readText()
+    .then((copiedText) => {
+      document.getElementById("copy-text-area").value = copiedText;
+      setTimeout(()=> {
+        copyFunction();
+      }, 1000);
+    });
+}
+
 function copyFunction() {
   document.getElementById("success-alert").style.display = "block";
   var content = document.getElementById("copy-text-area").value;
-  console.log(content);
+  // console.log(content);
   content = content.replace(/[\r\n]+/g, "\n");
   content = content.replace(/\n/g, " ");
 
-  console.log(content);
+  // console.log(content);
   var textArea = document.createElement("textarea");
   textArea.value = content;
   document.body.appendChild(textArea);
