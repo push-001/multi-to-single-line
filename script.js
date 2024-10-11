@@ -1,48 +1,40 @@
 document.getElementById("copy-text-area")
     .addEventListener("keyup", function(event) {
     event.preventDefault();
-    if (event.keyCode === 13) {
+    if (event.key === "Enter") { // Use 'key' instead of 'keyCode'
         document.getElementById("submit-button").click();
     }
 });
 
-function pasteFunction(){
+function pasteFunction() {
   navigator.clipboard.readText()
     .then((copiedText) => {
-      document.getElementById("copy-text-area").value = copiedText;
-      setTimeout(()=> {
-        copyFunction();
-      }, 1000);
+      const textArea = document.getElementById("copy-text-area");
+      textArea.value = copiedText;
+      copyFunction(); // No need for setTimeout
+    })
+    .catch((err) => {
+      console.error("Failed to read clipboard content:", err);
     });
 }
 
 function copyFunction() {
-  document.getElementById("success-alert").style.display = "block";
-  var content = document.getElementById("copy-text-area").value;
-  // console.log(content);
-  content = content.replace(/[\r\n]+/g, "\n");
-  content = content.replace(/\n/g, " ");
-
-  // console.log(content);
-  var textArea = document.createElement("textarea");
-  textArea.value = content;
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
-
-  try {
-    var successful = document.execCommand("copy");
-    var msg = successful ? "successful" : "unsuccessful";
-  } catch (err) {
-    console.log("Fallback: Oops, unable to copy", err);
-  }
-  document.body.removeChild(textArea);
-
-  document.getElementById("copy-text-area").value = "";
-
-  let hideSeek = setTimeout(function showElement(){
-    document.getElementById("success-alert").style.display = "none";
-}, 2000);
-
+  const contentElement = document.getElementById("copy-text-area");
+  let content = contentElement.value.trim(); // Remove extra spaces/newlines
   
+  // Replace multiple spaces between words with a single space
+  content = content.replace(/\s+/g, " ");
+
+  navigator.clipboard.writeText(content)
+    .then(() => {
+      document.getElementById("success-alert").style.display = "block";
+      contentElement.value = ""; // Clear input after copying
+
+      setTimeout(() => {
+        document.getElementById("success-alert").style.display = "none";
+      }, 2000);
+    })
+    .catch((err) => {
+      console.error("Failed to copy content:", err);
+    });
 }
